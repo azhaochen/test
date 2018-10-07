@@ -3,6 +3,7 @@
 var urllib = require('urllib');
 var extend = require('util')._extend;
 var querystring = require('querystring');
+var sha1 = require('sha1');
 
 /**
  * 对返回结果的一层封装，如果遇见微信返回的错误，将返回一个错误
@@ -473,5 +474,23 @@ OAuth.prototype.getUserByCode = function (options, callback) {
     });
   }
 };
+
+OAuth.empty = function(x){
+	if(typeof x=='undefined' || !x || x=='' || x==0 || x==null || x=='undefined' || x==undefined){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+
+OAuth.checkSignature = function(params){
+	if(!OAuth.empty(params['signature']) && !OAuth.empty(params['timestamp']) && !OAuth.empty(params['nonce']) && !OAuth.empty(params['echostr'])){
+		if(params['signature'] == sha1('srsy'+params['timestamp']+params['nonce'])){
+			return 1;
+		}
+	}
+	return 0;
+}
 
 module.exports = OAuth;
